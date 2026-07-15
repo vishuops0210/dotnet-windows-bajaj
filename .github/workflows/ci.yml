@@ -32,4 +32,5 @@ jobs:
           sonar-project-name: 'Bajaj Demo .NET 4.7 App'
           setup-nuget: 'true'
           build-command: 'nuget restore App.csproj && msbuild /p:Configuration=Release'
+
           
