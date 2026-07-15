@@ -30,29 +30,30 @@ jobs:
           sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
           sonar-project-key: 'bajaj-demo-dotnet47'
           sonar-project-name: 'Bajaj Demo .NET 4.7 App'
-          build-command: 'msbuild /p:Configuration=Release'
+          setup-nuget: 'true'
+          build-command: 'nuget restore App.csproj && msbuild /p:Configuration=Release'
 
       # ── Docker Build & Push ──
       # ⚠️ IMPORTANT: Ensure your shared Docker actions support Windows. 
       # GitHub's `docker/login-action` and `docker/build-push-action` DO work on Windows,
       # but if your shared composite actions use bash (`shell: bash`), they will fail here.
-      - name: Setup Docker Hub Login
-        uses: vishuops0210/shared-repo/.github/actions/docker-login@main
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # - name: Setup Docker Hub Login
+      #   uses: vishuops0210/shared-repo/.github/actions/docker-login@main
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Setup Docker Buildx
-        uses: vishuops0210/shared-repo/.github/actions/setup-docker@main
+      # - name: Setup Docker Buildx
+      #   uses: vishuops0210/shared-repo/.github/actions/setup-docker@main
 
-      - name: Build Docker Image
-        uses: vishuops0210/shared-repo/.github/actions/docker-build@main
-        with:
-          repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-dotnet47-app'
-          image-tag: ${{ github.sha }}
+      # - name: Build Docker Image
+      #   uses: vishuops0210/shared-repo/.github/actions/docker-build@main
+      #   with:
+      #     repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-dotnet47-app'
+      #     image-tag: ${{ github.sha }}
 
-      - name: Push Docker Image
-        uses: vishuops0210/shared-repo/.github/actions/docker-push@main
-        with:
-          repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-dotnet47-app'
-          image-tag: ${{ github.sha }}
+      # - name: Push Docker Image
+      #   uses: vishuops0210/shared-repo/.github/actions/docker-push@main
+      #   with:
+      #     repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-dotnet47-app'
+      #     image-tag: ${{ github.sha }}
