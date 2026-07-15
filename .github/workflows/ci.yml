@@ -1,0 +1,58 @@
+name: .NET 4.7 (Windows) CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    name: Build and Push .NET 4.7 to Docker Hub
+    # ⚠️ IMPORTANT: .NET 4.7 and Windows Containers REQUIRE a Windows runner
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── Security & Quality Gate ──
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: SonarQube Scan (.NET)
+        uses: vishuops0210/shared-repo/.github/actions/sonarqube-scan-dotnet@main
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
+          sonar-project-key: 'bajaj-demo-dotnet47'
+          sonar-project-name: 'Bajaj Demo .NET 4.7 App'
+          build-command: 'msbuild /p:Configuration=Release'
+
+      # ── Docker Build & Push ──
+      # ⚠️ IMPORTANT: Ensure your shared Docker actions support Windows. 
+      # GitHub's `docker/login-action` and `docker/build-push-action` DO work on Windows,
+      # but if your shared composite actions use bash (`shell: bash`), they will fail here.
+      - name: Setup Docker Hub Login
+        uses: vishuops0210/shared-repo/.github/actions/docker-login@main
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Setup Docker Buildx
+        uses: vishuops0210/shared-repo/.github/actions/setup-docker@main
+
+      - name: Build Docker Image
+        uses: vishuops0210/shared-repo/.github/actions/docker-build@main
+        with:
+          repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-dotnet47-app'
+          image-tag: ${{ github.sha }}
+
+      - name: Push Docker Image
+        uses: vishuops0210/shared-repo/.github/actions/docker-push@main
+        with:
+          repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-dotnet47-app'
+          image-tag: ${{ github.sha }}
