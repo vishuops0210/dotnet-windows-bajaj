@@ -17,7 +17,7 @@ jobs:
       sonar-project-key: 'bajaj-demo-dotnet47'
       sonar-args: '/d:sonar.cs.vscoveragexml.reportsPaths=**/TestResults/**/*.xml'
       artifact-name: 'bajaj-demo-dotnet47'
-      s3-bucket-name: 'my-bajaj-artifacts-bucket'
+      s3-bucket-name: 'my-bajaj-artifacts-bucket-dotnet'
       install-command: 'nuget restore App.csproj'
       build-command: 'msbuild App.csproj /p:Configuration=Release'
       test-command: 'Write-Host "No tests configured"'
