@@ -13,7 +13,6 @@ jobs:
   dotnet-ci:
     uses: vishuops0210/shared-repo/.github/workflows/ci-dotnet.yml@main
     with:
-    
       version: 'v1.0.0'
       sonar-project-key: 'bajaj-demo-dotnet47'
       sonar-args: '/d:sonar.cs.vscoveragexml.reportsPaths=**/TestResults/**/*.xml'
