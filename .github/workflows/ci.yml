@@ -1,36 +1,31 @@
-name: .NET 4.7 (Windows) CI/CD Pipeline
+name: .NET 4.7 (Windows) CI Pipeline
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+      - uat
 
 jobs:
-  build-and-push:
-    name: Build and Push .NET 4.7 to Docker Hub
-    # ⚠️ IMPORTANT: .NET 4.7 and Windows Containers REQUIRE a Windows runner
-    runs-on: windows-latest
-    permissions:
-      contents: read
-    
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # ── Security & Quality Gate ──
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: SonarQube Scan (.NET)
-        uses: vishuops0210/shared-repo/.github/actions/sonarqube-scan-dotnet@main
-        with:
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
-          sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
-          sonar-project-key: 'bajaj-demo-dotnet47'
-          sonar-project-name: 'Bajaj Demo .NET 4.7 App'
-          setup-nuget: 'true'
-          build-command: 'nuget restore App.csproj && msbuild /p:Configuration=Release'
-
-          
+  dotnet-ci:
+    uses: vishuops0210/shared-repo/.github/workflows/ci-dotnet.yml@main
+    with:
+      version: 'v1.0.0'
+      sonar-project-key: 'bajaj-demo-dotnet47'
+      sonar-args: '/d:sonar.cs.vscoveragexml.reportsPaths=**/TestResults/**/*.xml'
+      artifact-name: 'bajaj-demo-dotnet47'
+      s3-bucket-name: 'my-bajaj-artifacts-bucket'
+      package-command: |
+        if (Test-Path "bin\Release") {
+          Compress-Archive -Path bin\Release\* -DestinationPath deployment.zip
+        } else {
+          # Fallback if no Release folder is found
+          Compress-Archive -Path * -DestinationPath deployment.zip
+        }
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
