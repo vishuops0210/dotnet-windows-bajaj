@@ -8,7 +8,9 @@ namespace App.Tests
         [TestMethod]
         public void TestMethod1()
         {
-            Assert.IsTrue(true);
+            int expected = 2;
+            int actual = 1 + 1;
+            Assert.AreEqual(expected, actual, "Math should work correctly.");
         }
     }
 }

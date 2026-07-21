@@ -15,7 +15,10 @@ namespace App
             listener.Start();
             Console.WriteLine($"Listening on port {port}...");
 
-            while (true)
+            bool isRunning = true;
+            Console.CancelKeyPress += (sender, e) => { isRunning = false; };
+
+            while (isRunning)
             {
                 HttpListenerContext context = listener.GetContext();
                 HttpListenerResponse response = context.Response;
