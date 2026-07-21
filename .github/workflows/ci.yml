@@ -20,7 +20,7 @@ jobs:
       s3-bucket-name: 'my-bajaj-artifacts-bucket-dotnet'
       install-command: 'nuget restore App.csproj; msbuild -t:restore App.Tests\App.Tests.csproj'
       build-command: 'msbuild App.csproj /p:Configuration=Release; msbuild App.Tests\App.Tests.csproj /p:Configuration=Release'
-      test-command: '$dll = (Get-ChildItem -Path App.Tests -Filter "App.Tests.dll" -Recurse).FullName; vstest.console.exe $dll /EnableCodeCoverage'
+      test-command: 'msbuild App.Tests\App.Tests.csproj /p:Configuration=Release; $dll = (Get-ChildItem -Path App.Tests -Filter "App.Tests.dll" -Recurse).FullName; vstest.console.exe $dll /EnableCodeCoverage'
       package-command: |
         if (Test-Path "bin\Release") {
           Compress-Archive -Path bin\Release\* -DestinationPath deployment.zip
