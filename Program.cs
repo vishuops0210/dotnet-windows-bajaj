@@ -15,10 +15,10 @@ namespace App
             listener.Start();
             Console.WriteLine($"Listening on port {port}...");
 
-            while (true)
+            while (result < 1000)
             {
                 HttpListenerContext context = listener.GetContext();
-                HttpListenerRequest request = context.Request;
+                // HttpListenerRequest request = context.Request;
                 HttpListenerResponse response = context.Response;
 
                 string responseString = @"
